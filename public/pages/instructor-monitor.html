@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Sets the theme attribute IMMEDIATELY, before the rest of the
+       page loads or renders — see index.html for the full explanation
+       of why this needs to be an inline script. -->
+  <script>
+    (function () {
+      var stored = localStorage.getItem('theme');
+      var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+  <title>Race by Code - Live Monitor</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+  <div id="app-shell">
+
+    <aside id="sidebar">
+      <div id="sidebar-brand">
+        <h2>Race by Code</h2>
+      </div>
+
+      <nav id="sidebar-nav">
+        <ul>
+          <li><a href="instructor-dashboard.html" id="nav-dashboard">Dashboard</a></li>
+          <li><a href="instructor-monitor.html" id="nav-monitor">Live Monitor</a></li>
+        </ul>
+      </nav>
+
+      <button type="button" id="logout-button">Log Out</button>
+    </aside>
+
+    <div id="content-area">
+
+      <header id="topbar">
+        <h1 id="page-title">Live Monitor</h1>
+        <div id="topbar-right">
+          <div id="topbar-user">
+            <span id="user-name">Loading...</span>
+          </div>
+          <button type="button" id="theme-toggle" aria-label="Toggle theme"></button>
+        </div>
+      </header>
+
+      <main id="main-content">
+
+        <section id="live-match-info">
+          <h2 id="monitor-class-name">Class: —</h2>
+          <p id="monitor-track-name">Track: —</p>
+          <p id="monitor-match-status">Status: Waiting</p>
+          <button type="button" id="end-match-button">End Match</button>
+        </section>
+
+        <section id="live-leaderboard">
+          <h2>Live Leaderboard</h2>
+          <table id="live-leaderboard-table">
+            <thead>
+              <tr>
+                <th scope="col">Rank</th>
+                <th scope="col">Student</th>
+                <th scope="col">Score</th>
+                <th scope="col">Car Position</th>
+              </tr>
+            </thead>
+            <!-- matchSocket.js pushes live updates into these rows -->
+            <tbody id="live-leaderboard-body"></tbody>
+          </table>
+        </section>
+
+        <section id="at-risk-panel">
+          <h2>At-Risk Students</h2>
+          <!-- instructor.js fills this from GET /api/analytics (AtRiskFlag rows) -->
+          <ul id="at-risk-list"></ul>
+          <p id="at-risk-empty" hidden>No students currently flagged.</p>
+        </section>
+
+      </main>
+
+    </div>
+
+  </div>
+
+  <script src="../js/theme.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/instructor.js"></script>
+</body>
+</html>

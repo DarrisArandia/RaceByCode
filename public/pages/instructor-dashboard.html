@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Sets the theme attribute IMMEDIATELY, before the rest of the
+       page loads or renders — see index.html for the full explanation
+       of why this needs to be an inline script. -->
+  <script>
+    (function () {
+      var stored = localStorage.getItem('theme');
+      var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+  <title>Race by Code - Instructor Dashboard</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+  <!-- Sidebar + topbar + main shell — used by both instructor pages.
+       Same copy-pasted-sidebar pattern as the student pages, just with
+       instructor-specific nav links. -->
+  <div id="app-shell">
+
+    <aside id="sidebar">
+      <div id="sidebar-brand">
+        <h2>Race by Code</h2>
+      </div>
+
+      <nav id="sidebar-nav">
+        <ul>
+          <li><a href="instructor-dashboard.html" id="nav-dashboard">Dashboard</a></li>
+          <li><a href="instructor-monitor.html" id="nav-monitor">Live Monitor</a></li>
+        </ul>
+      </nav>
+
+      <button type="button" id="logout-button">Log Out</button>
+    </aside>
+
+    <div id="content-area">
+
+      <header id="topbar">
+        <h1 id="page-title">Instructor Dashboard</h1>
+        <div id="topbar-right">
+          <div id="topbar-user">
+            <span id="user-name">Loading...</span>
+          </div>
+          <button type="button" id="theme-toggle" aria-label="Toggle theme"></button>
+        </div>
+      </header>
+
+      <main id="main-content">
+
+        <section id="class-management">
+          <h2>Your Classes</h2>
+
+          <table id="classes-table">
+            <thead>
+              <tr>
+                <th scope="col">Class Name</th>
+                <th scope="col">Join Code</th>
+                <th scope="col">Created</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <!-- instructor.js fills in rows from GET /api/classes -->
+            <tbody id="classes-table-body"></tbody>
+          </table>
+          <p id="classes-empty" hidden>You haven't created a class yet.</p>
+
+          <form id="create-class-form">
+            <h3>Create a New Class</h3>
+            <label for="class-name-input">Class Name</label>
+            <input type="text" id="class-name-input" name="class_name" required>
+            <button type="submit">Create Class</button>
+            <p id="create-class-error" role="alert"></p>
+          </form>
+        </section>
+
+        <section id="question-bank">
+          <h2>Question Bank</h2>
+
+          <table id="questions-table">
+            <thead>
+              <tr>
+                <th scope="col">Question</th>
+                <th scope="col">Topic</th>
+                <th scope="col">Difficulty</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <!-- instructor.js fills in rows from GET /api/questions -->
+            <tbody id="questions-table-body"></tbody>
+          </table>
+          <p id="questions-empty" hidden>No questions added yet.</p>
+
+          <form id="create-question-form">
+            <h3>Add a Question</h3>
+
+            <label for="question-topic-select">Topic</label>
+            <!-- instructor.js populates this from GET /api/questions (or a
+                 topics list) so options match real topic_id values -->
+            <select id="question-topic-select" name="topic_id" required></select>
+
+            <label for="question-text-input">Question Text</label>
+            <textarea id="question-text-input" name="question_text" rows="3" required></textarea>
+
+            <label for="question-answer-input">Expected Answer</label>
+            <textarea id="question-answer-input" name="expected_answer" rows="2"></textarea>
+
+            <label for="question-difficulty-select">Difficulty</label>
+            <select id="question-difficulty-select" name="difficulty_level" required>
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+
+            <button type="submit">Add Question</button>
+            <p id="create-question-error" role="alert"></p>
+          </form>
+        </section>
+
+      </main>
+
+    </div>
+
+  </div>
+
+  <script src="../js/theme.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/instructor.js"></script>
+</body>
+</html>

@@ -1,0 +1,554 @@
+/* public/css/style.css
+   ============================================================
+   One shared stylesheet for the whole app, now with light AND
+   dark theme support. How theming works in this file:
+
+     - All colors are CSS variables defined once under :root
+       (this is the LIGHT theme — the default).
+     - A second block, :root[data-theme="dark"], overrides just
+       the color variables for dark mode.
+     - Every other rule in this file uses var(--color-...) instead
+       of a hardcoded color, so switching the data-theme attribute
+       on <html> instantly re-colors the whole page — no JS needed
+       beyond setting that one attribute.
+     - public/js/theme.js is the file that actually sets/toggles
+       that attribute and remembers the choice in localStorage.
+
+   Sections, in order:
+     1. CSS variables — LIGHT theme (default)
+     2. CSS variables — DARK theme overrides
+     3. Reset / base
+     4. Typography
+     5. Theme toggle button
+     6. Buttons
+     7. Forms
+     8. Auth shell
+     9. App shell (sidebar + topbar + main)
+     10. Tables
+     11. Cards / sections
+     12. Race page
+     13. Alerts / feedback messages
+     14. Responsive
+   ============================================================ */
+
+
+/* ============================================================
+   1. LIGHT THEME (default) — academic/professional palette:
+   navy for primary actions, a muted gold accent, calm neutral
+   backgrounds. Deliberately avoiding a generic bright-blue/
+   purple-gradient "SaaS" look, since this needs to read as
+   institutional, not like a startup landing page.
+   ============================================================ */
+:root {
+  --color-bg: #f5f6f8;
+  --color-surface: #ffffff;         /* sidebar, cards, panels */
+  --color-surface-raised: #eef0f3;  /* hover states, inputs */
+  --color-border: #dde1e6;
+
+  --color-text: #1a1f29;
+  --color-text-muted: #5c6470;
+
+  --color-primary: #1e3a5f;         /* navy — primary buttons, links, active states */
+  --color-primary-hover: #16304f;
+  --color-primary-contrast: #ffffff; /* text color ON TOP of a primary-colored background */
+
+  --color-accent: #a9791c;          /* muted gold — used sparingly for accents/highlights */
+
+  --color-success: #2f7d4f;
+  --color-danger: #c0392b;
+  /* Light, tinted backgrounds for alert boxes. Defined explicitly per
+     theme (instead of using the newer color-mix() CSS function) since
+     that keeps this file readable without knowing a less-common CSS
+     feature — just two more plain color values. */
+  --color-danger-bg: #fbeae8;
+  --color-success-bg: #e9f5ee;
+
+  /* Type: Space Grotesk for UI text, JetBrains Mono for anything
+     numeric/technical (scores, timers, join codes, code answers). */
+  --font-ui: 'Space Grotesk', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2.5rem;
+
+  --radius: 8px;
+}
+
+
+/* ============================================================
+   2. DARK THEME — same structure, different values. Only colors
+   change here; spacing/fonts/radius stay identical since those
+   aren't theme-dependent.
+   ============================================================ */
+:root[data-theme="dark"] {
+  --color-bg: #12161d;
+  --color-surface: #1b2129;
+  --color-surface-raised: #232a33;
+  --color-border: #2c333d;
+
+  --color-text: #e7e9ee;
+  --color-text-muted: #8b93a0;
+
+  --color-primary: #5c8ac9;         /* lighter navy — needs to stay readable on a dark bg */
+  --color-primary-hover: #7aa2d6;
+  --color-primary-contrast: #0d1420; /* dark text on the lighter primary color */
+
+  --color-accent: #d4af37;          /* brighter gold for the same reason */
+
+  --color-success: #4caf7d;
+  --color-danger: #e57373;
+  --color-danger-bg: #3a2323;
+  --color-success-bg: #1f3329;
+}
+
+
+/* ============================================================
+   3. RESET / BASE
+   ============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-ui);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.5;
+  /* Smooth color transition when the theme toggle is clicked,
+     instead of an instant, jarring flip. */
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+img { max-width: 100%; display: block; }
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+
+/* ============================================================
+   4. TYPOGRAPHY
+   ============================================================ */
+h1, h2, h3 {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0 0 var(--space-sm) 0;
+}
+
+h1 { font-size: 1.75rem; }
+h2 { font-size: 1.25rem; }
+h3 { font-size: 1rem; color: var(--color-text-muted); }
+
+p { margin: 0 0 var(--space-sm) 0; }
+
+.mono, #score-value, #timer-value, #total-score,
+td[data-numeric] {
+  font-family: var(--font-mono);
+}
+
+
+/* ============================================================
+   5. THEME TOGGLE BUTTON
+   A small icon-style button — same button base styling as the
+   rest of the app, just square and compact since it only ever
+   holds one character (a sun/moon symbol, set by theme.js).
+   ============================================================ */
+#theme-toggle {
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  border-radius: 50%;
+  background-color: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+#theme-toggle:hover {
+  border-color: var(--color-primary);
+}
+
+
+/* ============================================================
+   6. BUTTONS
+   ============================================================ */
+button, .btn {
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface-raised);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+button:hover, .btn:hover {
+  border-color: var(--color-primary);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary, button[type="submit"] {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+.btn-primary:hover, button[type="submit"]:hover {
+  background-color: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+
+/* ============================================================
+   7. FORMS
+   ============================================================ */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  max-width: 420px;
+}
+
+label {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin-top: var(--space-xs);
+}
+
+input, textarea, select {
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  padding: 0.6rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}
+
+label:has(input[type="radio"]), label:has(input[type="checkbox"]) {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: var(--color-text);
+  font-size: 1rem;
+  margin-top: 0;
+}
+
+
+/* ============================================================
+   8. AUTH SHELL (index.html)
+   ============================================================ */
+#auth-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg);
+  position: relative;
+}
+
+/* The toggle sits in the top-right corner on this page, since
+   there's no topbar here to hold it. */
+#auth-theme-toggle-wrap {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+}
+
+#brand { text-align: center; margin-bottom: var(--space-lg); }
+#brand p { color: var(--color-text-muted); }
+
+#auth-panel {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-lg);
+  width: 100%;
+  max-width: 420px;
+}
+
+#auth-tabs {
+  display: flex;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-md);
+}
+
+#auth-tabs button {
+  flex: 1;
+}
+
+
+/* ============================================================
+   9. APP SHELL (sidebar + topbar + main)
+   ============================================================ */
+#app-shell {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: 100vh;
+}
+
+#sidebar {
+  background-color: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+}
+
+#sidebar-brand h2 { font-size: 1.1rem; margin-bottom: var(--space-lg); }
+
+#sidebar-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+#sidebar-nav a {
+  display: block;
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--radius);
+  color: var(--color-text-muted);
+}
+
+#sidebar-nav a:hover {
+  background-color: var(--color-surface-raised);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+#sidebar-nav a.active {
+  background-color: var(--color-surface-raised);
+  color: var(--color-primary);
+  border-left: 3px solid var(--color-primary);
+}
+
+#logout-button {
+  margin-top: auto;
+}
+
+#content-area {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+#topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  background-color: var(--color-bg);
+}
+
+#topbar h1 { margin: 0; }
+
+/* Groups the user info and the theme toggle together on the
+   right side of the topbar. */
+#topbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+#topbar-user {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+#main-content {
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+
+/* ============================================================
+   10. TABLES
+   ============================================================ */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  text-align: left;
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+th {
+  color: var(--color-text-muted);
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+tbody tr:hover {
+  background-color: var(--color-surface-raised);
+}
+
+
+/* ============================================================
+   11. CARDS / SECTIONS
+   ============================================================ */
+#main-content > section {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-md);
+}
+
+progress {
+  width: 100%;
+  height: 10px;
+  accent-color: var(--color-primary);
+}
+
+
+/* ============================================================
+   12. RACE PAGE
+   ============================================================ */
+#race-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  grid-template-rows: auto 1fr auto;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background-color: var(--color-bg);
+}
+
+#race-topbar {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#race-timer {
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  color: var(--color-primary);
+}
+
+#car-lanes {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+#car-lanes li {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-sm);
+  height: 3rem;
+  position: relative;
+  overflow: hidden;
+}
+
+#question-panel {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-md);
+}
+
+#answer-input {
+  max-width: none;
+  font-family: var(--font-mono);
+}
+
+#mini-leaderboard {
+  grid-row: 2 / 3;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-md);
+}
+
+#mini-leaderboard-list {
+  font-family: var(--font-mono);
+  padding-left: 1.25rem;
+}
+
+
+/* ============================================================
+   13. ALERTS / FEEDBACK MESSAGES
+   ============================================================ */
+[role="alert"]:empty {
+  display: none;
+}
+
+[role="alert"] {
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  background-color: var(--color-danger-bg);
+  color: var(--color-danger);
+  border: 1px solid var(--color-danger);
+}
+
+[role="alert"].success {
+  background-color: var(--color-success-bg);
+  color: var(--color-success);
+  border-color: var(--color-success);
+}
+
+
+/* ============================================================
+   14. RESPONSIVE
+   ============================================================ */
+@media (max-width: 700px) {
+  #app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  #sidebar {
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  #race-shell {
+    grid-template-columns: 1fr;
+  }
+}

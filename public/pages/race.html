@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Sets the theme attribute IMMEDIATELY, before the rest of the
+       page loads or renders — see index.html for the full explanation
+       of why this needs to be an inline script. -->
+  <script>
+    (function () {
+      var stored = localStorage.getItem('theme');
+      var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+  <title>Race by Code - Race</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Uses the same shared style.css as every other page, not a
+       separate race.css — one stylesheet for the whole app keeps
+       things simple, and race.html's layout rules live in the
+       "RACE PAGE" section of that file. -->
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+  <!-- Deliberately NOT using the sidebar+topbar shell here. During
+       actual gameplay the student needs full screen focus on the
+       track and the question — sidebar navigation would just be a
+       distraction (and a way to accidentally leave mid-race). -->
+  <div id="race-shell">
+
+    <header id="race-topbar">
+      <h1 id="race-track-name">Race</h1>
+      <div id="topbar-right">
+        <div id="race-timer">
+          Time Left: <span id="timer-value">--</span>s
+        </div>
+        <button type="button" id="theme-toggle" aria-label="Toggle theme"></button>
+      </div>
+    </header>
+
+    <section id="race-track" aria-label="Race track">
+      <!-- One lane per participant. student.js/matchSocket updates
+           each car's position as answers come in. -->
+      <ul id="car-lanes"></ul>
+    </section>
+
+    <section id="question-panel">
+      <h2>Question <span id="question-number"></span></h2>
+      <p id="question-difficulty"></p>
+      <p id="question-text">Loading question...</p>
+
+      <label for="answer-input">Your Answer</label>
+      <textarea id="answer-input" name="answer" rows="4"
+        placeholder="Type your code or answer here"></textarea>
+
+      <button type="button" id="submit-answer-button" class="btn-primary">Submit Answer</button>
+
+      <!-- evaluationRoutes.js result (correct/incorrect + AI feedback text)
+           gets displayed here after submitting. -->
+      <p id="answer-feedback" role="alert"></p>
+    </section>
+
+    <aside id="mini-leaderboard">
+      <h2>Standings</h2>
+      <ol id="mini-leaderboard-list"></ol>
+    </aside>
+
+  </div>
+
+  <script src="../js/theme.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/student.js"></script>
+</body>
+</html>

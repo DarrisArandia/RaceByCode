@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Sets the theme attribute IMMEDIATELY, before the rest of the
+       page loads or renders — see index.html for the full explanation
+       of why this needs to be an inline script. -->
+  <script>
+    (function () {
+      var stored = localStorage.getItem('theme');
+      var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+  <title>Race by Code - Leaderboard</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+  <div id="app-shell">
+
+    <aside id="sidebar">
+      <div id="sidebar-brand">
+        <h2>Race by Code</h2>
+      </div>
+
+      <nav id="sidebar-nav">
+        <ul>
+          <li><a href="student-dashboard.html" id="nav-dashboard">Dashboard</a></li>
+          <li><a href="match-lobby.html" id="nav-lobby">Match Lobby</a></li>
+          <li><a href="leaderboard.html" id="nav-leaderboard">Leaderboard</a></li>
+        </ul>
+      </nav>
+
+      <button type="button" id="logout-button">Log Out</button>
+    </aside>
+
+    <div id="content-area">
+
+      <header id="topbar">
+        <h1 id="page-title">Match Results</h1>
+        <div id="topbar-right">
+          <div id="topbar-user">
+            <span id="user-name">Loading...</span>
+            <span id="user-tier"></span>
+          </div>
+          <button type="button" id="theme-toggle" aria-label="Toggle theme"></button>
+        </div>
+      </header>
+
+      <main id="main-content">
+
+        <section id="final-results">
+          <h2>Final Standings</h2>
+          <table id="results-table">
+            <thead>
+              <tr>
+                <th scope="col">Rank</th>
+                <th scope="col">Player</th>
+                <th scope="col">Score</th>
+                <th scope="col">Accuracy</th>
+              </tr>
+            </thead>
+            <!-- student.js fills in rows once matchRoutes.js returns final results -->
+            <tbody id="results-body"></tbody>
+          </table>
+        </section>
+
+        <section id="match-achievements">
+          <h2>Achievements Earned</h2>
+          <ul id="match-achievements-list"></ul>
+          <p id="match-achievements-empty" hidden>No new achievements this match.</p>
+        </section>
+
+        <section id="post-match-actions">
+          <button type="button" id="play-again-button" class="btn-primary">Play Again</button>
+          <a href="student-dashboard.html" id="back-to-dashboard-link" class="btn">Back to Dashboard</a>
+        </section>
+
+      </main>
+
+    </div>
+
+  </div>
+
+  <script src="../js/theme.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/student.js"></script>
+</body>
+</html>

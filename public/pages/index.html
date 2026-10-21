@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Sets the theme attribute IMMEDIATELY, before the rest of the
+       page loads or renders. Without this, the page would flash the
+       light theme for a split second even for someone who has dark
+       mode saved, since public/js/theme.js (which normally handles
+       this) wouldn't run until after the HTML/CSS have already
+       painted. This has to be a plain inline script for that reason —
+       an external file would load too late to prevent the flash. -->
+  <script>
+    (function () {
+      var stored = localStorage.getItem('theme');
+      var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+
+  <title>Race by Code - Log In</title>
+
+  <!-- Google Fonts: Space Grotesk (UI text) + JetBrains Mono (data/code).
+       Loaded from Google's CDN — requires internet access to render with
+       the intended fonts; falls back to system fonts if offline. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+  <!-- Standalone centered shell: this page has no sidebar/topbar,
+       since login/register happens before a user has a role or
+       a dashboard to sit inside. -->
+  <main id="auth-shell">
+
+    <div id="auth-theme-toggle-wrap">
+      <button type="button" id="theme-toggle" aria-label="Toggle theme"></button>
+    </div>
+
+    <header id="brand">
+      <h1>Race by Code</h1>
+      <p>Syllabus-aligned multiplayer coding practice for PLMun students.</p>
+    </header>
+
+    <section id="auth-panel">
+
+      <!-- Two buttons to switch between the login and register forms below.
+           auth.js will show/hide the matching form when these are clicked. -->
+      <div id="auth-tabs">
+        <button type="button" id="show-login-tab">Log In</button>
+        <button type="button" id="show-register-tab">Register</button>
+      </div>
+      
+
+      <!-- LOGIN FORM -->
+      <form id="login-form">
+        <h2>Log In</h2>
+
+        <label for="login-identifier">Username or Email</label>
+        <input type="text" id="login-identifier" name="identifier" required>
+
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" name="password" required>
+
+        <button type="submit">Log In</button>
+
+        <!-- auth.js fills this in if the server returns an error,
+             e.g. "Invalid credentials." -->
+        <p id="login-error" role="alert"></p>
+      </form>
+
+      <!-- REGISTER FORM — hidden by default, shown when the
+           "Register" tab above is clicked. -->
+      <form id="register-form" hidden>
+        <h2>Create an Account</h2>
+
+        <label for="register-username">Username</label>
+        <input type="text" id="register-username" name="username" required>
+
+        <label for="register-email">Email</label>
+        <input type="email" id="register-email" name="email" required>
+
+        <label for="register-password">Password</label>
+        <input type="password" id="register-password" name="password" required minlength="8">
+        <p id="register-password-hint">At least 8 characters.</p>
+
+        <label for="register-role">I am a</label>
+        
+
+        <button type="submit">Create Account</button>
+
+        <p id="register-error" role="alert"></p>
+      </form>
+
+    </section>
+
+  </main>
+
+  <script src="../js/theme.js"></script>
+  <script src="../js/auth.js"></script>
+</body>
+</html>
